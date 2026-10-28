@@ -46,6 +46,7 @@ nav button[aria-current=true]{color:var(--ac);font-weight:600}
 nav span{display:block;font-size:1.4rem;line-height:1.2}
 .login{text-align:center;padding:56px 8px}
 .login h1{font-size:2rem;letter-spacing:-.02em}
+.rowb{width:100%;border:0;border-bottom:.5px solid var(--ln);background:none;color:inherit;font:inherit;text-align:left;cursor:pointer}
 </style></head><body>
 <div id="app"></div>
 <datalist id="art"></datalist><datalist id="four"></datalist>
@@ -101,8 +102,9 @@ Vao coco|42000|carton|3
 Verre à jeté|48000|carton|2`.split('\n').map(l=>{const[n,p,u,m]=l.split('|');return{n,p:+p,u,m:+m}});
 const K='bl_proto_v1';let S={liv:[],seq:0,pin:null,pref:'BL',last:null};
 try{S=Object.assign(S,JSON.parse(localStorage.getItem(K))||{})}catch(e){}
+if(Array.isArray(S.cat)&&S.cat.length){const c=S.cat;CAT.length=0;c.forEach(a=>CAT.push(a))}S.cat=CAT;
 const save=()=>{try{localStorage.setItem(K,JSON.stringify(S))}catch(e){}};
-let me=null,tab='liv',view=null,D=null;
+let me=null,tab='liv',view=null,D=null,CE=null,cq='',back=null;
 const $=s=>document.querySelector(s);
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const fmt=n=>Math.round(n).toLocaleString('fr-FR')+' Ar';
@@ -121,12 +123,12 @@ function render(){
  if(!me){A.innerHTML=`<div class="login"><h1>📦 Bons de livraison</h1><p class="mut">Les données restent sur ce téléphone.</p><label style="text-align:left">${S.pin?'Code administrateur':'Premier lancement : choisissez un code administrateur (4 caractères ou plus)'}<input id="pin" type="password" inputmode="numeric" autocomplete="off"></label><div class="err" id="err" role="alert"></div><button class="btn" data-a="in" data-r="admin">Entrer comme administrateur</button><button class="btn sec" data-a="in" data-r="user">Entrer comme utilisateur</button><p class="mut small">Administrateur : tout faire. Utilisateur : consulter, créer une commande, ajouter une avance.</p></div>`;return}
  $('#art').innerHTML=CAT.map(a=>`<option value="${esc(a.n)}">`).join('');
  $('#four').innerHTML=[...new Set(S.liv.map(l=>l.fourn))].map(f=>`<option value="${esc(f)}">`).join('');
- let h=`<header><b>${{liv:'Livraisons',new:'Nouvelle livraison',due:'Impayés',set:'Réglages'}[tab]}</b><span class="role">${isAdmin()?'Administrateur':'Utilisateur'}</span><button class="lnk" data-a="out">Quitter</button></header><main>`;
+ let h=`<header><b>${{liv:'Livraisons',new:'Nouvelle livraison',due:'Impayés',set:'Réglages',cat:'Catalogue'}[tab]}</b><span class="role">${isAdmin()?'Administrateur':'Utilisateur'}</span><button class="lnk" data-a="out">Quitter</button></header><main>`;
  if(tab==='liv'&&view)h+=detail(find(view));
  else if(tab==='liv')h+=list();
  else if(tab==='new')h+=form();
- else if(tab==='set')h+=settings();else h+=due();
- h+=`</main><nav>${[['liv','📋','Livraisons'],['new','➕','Nouvelle'],['due','⏳','Impayés'],['set','⚙️','Réglages']].map(([t,i,n])=>`<button data-a="tab" data-t="${t}" ${tab===t?'aria-current="true"':''}><span>${i}</span>${n}</button>`).join('')}</nav>`;
+ else if(tab==='set')h+=settings();else if(tab==='cat')h+=catalog();else h+=due();
+ h+=`</main><nav>${[['liv','📋','Livraisons'],['new','➕','Nouvelle'],['due','⏳','Impayés'],['cat','🗂️','Catalogue'],['set','⚙️','Réglages']].map(([t,i,n])=>`<button data-a="tab" data-t="${t}" ${tab===t?'aria-current="true"':''}><span>${i}</span>${n}</button>`).join('')}</nav>`;
  A.innerHTML=h;
  if(tab==='new')D.lines.forEach((_,i)=>meta(i));
 }
@@ -167,7 +169,7 @@ function lineHTML(l,i){
 function meta(i){
  const l=D.lines[i],c=document.querySelector(`.ln[data-i="${i}"] .meta`);if(!c)return;
  let b='';
- if(l.n.trim()&&l.ref==null)b+='<span class="bd wa">Hors catalogue</span>';
+ if(l.n.trim()&&l.ref==null)b+='<span class="bd wa">Hors catalogue</span>'+(isAdmin()&&l.p>0?`<button class="lnk" data-a="tocat" data-i="${i}">+ Ajouter au catalogue</button>`:'');
  else if(l.ref!=null&&l.p&&l.p!==l.ref){const d=Math.round((l.p-l.ref)/l.ref*100);b+=`<span class="bd ${d>0?'rd':'gn'}">Prix ${d>0?'+':''}${d} % · réf. ${fmt(l.ref)}</span>`}
  if(l.u)b+=`<span class="mut small">prix par ${esc(l.u)}</span>`;
  c.innerHTML=b+`<b class="lt">${fmt(l.q*l.m*l.p)}</b>`;
@@ -177,6 +179,7 @@ document.addEventListener('input',e=>{
  const t=e.target;
  if(t.id==='fo'){D.fourn=t.value;return}
  if(t.id==='dt'){D.date=t.value;return}
+ if(t.id==='cs'){cq=t.value;$('#clist').innerHTML=catList();return}
  const c=t.closest('.ln');if(!c||!D)return;
  const i=+c.dataset.i,l=D.lines[i];
  if(t.classList.contains('n')){
@@ -192,8 +195,25 @@ document.addEventListener('click',e=>{
  const a=b.dataset.a,err=m=>{const x=$('#err');if(x)x.textContent=m};
  if(a==='in'){const r=b.dataset.r;if(r==='admin'){const p=($('#pin').value||'').trim();if(!S.pin){if(p.length<4)return err('Choisissez un code d’au moins 4 caractères.');S.pin=p;save()}else if(p!==S.pin)return err('Code incorrect.')}me=r;tab='liv';view=null;try{navigator.storage&&navigator.storage.persist&&navigator.storage.persist()}catch(e){}}
  else if(a==='out'){me=null;D=null}
- else if(a==='tab'){tab=b.dataset.t;view=null}
+ else if(a==='tab'){tab=b.dataset.t;view=null;CE=null;back=null}
  else if(a==='open'){tab='liv';view=b.dataset.id}
+ else if(a==='cnew')CE={i:-1,n:'',p:0,m:1,u:'carton'};
+ else if(a==='cedit'){const x=CAT[+b.dataset.i];CE={i:+b.dataset.i,n:x.n,p:x.p,m:x.m,u:x.u}}
+ else if(a==='ccancel'){CE=null;if(back){tab=back;back=null}}
+ else if(a==='tocat'){const l=D.lines[+b.dataset.i];CE={i:-1,n:l.n.trim(),p:l.p,m:l.m||1,u:l.u||'carton'};back='new';tab='cat'}
+ else if(a==='csave'){
+  const n=$('#cn').value.trim(),p=+$('#cp').value,m=+$('#cm').value,u=$('#cu').value.trim();
+  if(!n)return err('Indiquez le nom de l’article.');
+  if(!(p>0)||!(m>0))return err('Le prix et le multiplicateur doivent être supérieurs à 0.');
+  if(CAT.some((x,j)=>j!==CE.i&&x.n.toLowerCase()===n.toLowerCase()))return err('Cet article existe déjà dans le catalogue.');
+  const it={n,p,u,m};if(CE.i>=0)CAT[CE.i]=it;else CAT.push(it);
+  if(D)D.lines.forEach(l=>{if(l.ref==null&&l.n.trim().toLowerCase()===n.toLowerCase()){l.ref=p;l.u=u}});
+  save();CE=null;if(back){tab=back;back=null}
+ }
+ else if(a==='cdel'){
+  if(b.dataset.sure!=='1'){b.dataset.sure='1';b.textContent='Toucher à nouveau pour confirmer';return}
+  CAT.splice(CE.i,1);save();CE=null;
+ }
  else if(a==='back')view=null;
  else if(a==='exp'){dl('sauvegarde-bons-'+today()+'.json',JSON.stringify(S),'application/json');S.last=today();save()}
  else if(a==='csv')csv();
@@ -230,9 +250,23 @@ function settings(){
  if(isAdmin())h+=`<div class="card"><b>Paramètres administrateur</b><p class="mut small">Utilisez un préfixe différent sur chaque téléphone (par exemple R ou M) pour éviter les numéros de bon en double.</p><label>Préfixe des numéros de bon<input id="pf" value="${esc(S.pref||'BL')}" maxlength="6"></label><button class="btn sec" data-a="pref">Enregistrer le préfixe</button><label>Nouveau code administrateur<input id="np" type="password" inputmode="numeric" autocomplete="off"></label><button class="btn sec" data-a="pin">Changer le code</button><div class="err" id="err" role="alert"></div></div>`;
  return h+`<p class="mut small">${S.liv.length} livraison(s) enregistrée(s) sur ce téléphone.</p>`;
 }
+function catList(){
+ const q=cq.trim().toLowerCase();
+ const r=CAT.map((a,i)=>({a,i})).filter(x=>x.a.n.toLowerCase().includes(q)).sort((x,y)=>x.a.n.localeCompare(y.a.n,'fr'));
+ if(!r.length)return'<div class="card"><p class="mut">Aucun article trouvé.</p></div>';
+ return`<div class="card" style="padding:2px 14px">${r.map(({a,i})=>{const c=`<span>${esc(a.n)}<br><span class="mut small">${esc(a.u||'')} · ×${a.m}</span></span><b>${fmt(a.p)}</b>`;return isAdmin()?`<button class="ln1 rowb" data-a="cedit" data-i="${i}">${c}</button>`:`<div class="ln1">${c}</div>`}).join('')}</div>`;
+}
+function catalog(){
+ if(CE)return catForm();
+ return`<div class="card" style="padding:8px"><input id="cs" type="search" placeholder="Rechercher un article" value="${esc(cq)}" autocomplete="off"></div><p class="mut small" style="margin:6px 4px">${CAT.length} articles${isAdmin()?'. Touchez un article pour le modifier.':''}</p>${isAdmin()?'<button class="btn" data-a="cnew">+ Nouvel article</button>':''}<div id="clist">${catList()}</div>`;
+}
+function catForm(){
+ const c=CE,ed=c.i>=0;
+ return`<h2>${ed?'Modifier l’article':'Nouvel article'}</h2><div class="card"><label>Nom de l’article<input id="cn" value="${esc(c.n)}" autocomplete="off"></label><div class="row3" style="grid-template-columns:1fr 1fr"><label>Prix (Ar)<input id="cp" type="number" inputmode="decimal" min="0" value="${c.p||''}"></label><label>Multiplicateur<input id="cm" type="number" inputmode="decimal" min="0" value="${c.m||1}"></label></div><label>Unité du prix<input id="cu" list="unites" value="${esc(c.u||'')}" placeholder="carton, paquet, sac…"></label><datalist id="unites"><option value="carton"><option value="paquet"><option value="sac"><option value="balle"><option value="pièces"></datalist><p class="mut small">Multiplicateur : nombre d’unités dans le carton ou le paquet. Mettez 1 si le prix est celui de l’ensemble.</p><div class="err" id="err" role="alert"></div><button class="btn" data-a="csave">Enregistrer</button><button class="btn sec" data-a="ccancel">Annuler</button>${ed?'<button class="btn dg" data-a="cdel">Supprimer l’article</button>':''}</div>`;
+}
 document.addEventListener('change',e=>{
  if(e.target.id!=='imp')return;const f=e.target.files[0];if(!f)return;
- const r=new FileReader();r.onload=()=>{try{const d=JSON.parse(r.result);if(!Array.isArray(d.liv))throw 0;if(!confirm('Remplacer toutes les données de ce téléphone par cette sauvegarde ?'))return;S=Object.assign({liv:[],seq:0,pin:null,pref:'BL',last:null},d);save();me=null;render()}catch(x){alert('Fichier de sauvegarde invalide.')}};
+ const r=new FileReader();r.onload=()=>{try{const d=JSON.parse(r.result);if(!Array.isArray(d.liv))throw 0;if(!confirm('Remplacer toutes les données de ce téléphone par cette sauvegarde ?'))return;S=Object.assign({liv:[],seq:0,pin:null,pref:'BL',last:null},d);if(Array.isArray(d.cat)&&d.cat.length){CAT.length=0;d.cat.forEach(a=>CAT.push(a))}S.cat=CAT;save();me=null;render()}catch(x){alert('Fichier de sauvegarde invalide.')}};
  r.readAsText(f);
 });
 if('serviceWorker' in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
