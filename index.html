@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="fr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Bons de livraison</title>
+<link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#f2f2f7"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Livraisons"><link rel="icon" href="icon-192.png"><link rel="apple-touch-icon" href="icon-192.png">
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);--bg:#f2f2f7;--card:#fff;--tx:#000;--mut:#8e8e93;--ln:#e5e5ea;--fill:#f2f2f7;--ac:#007aff;--on:#fff;--tint:rgba(0,122,255,.12);--wa:#a35a00;--wab:rgba(255,149,0,.16);--rd:#d70015;--rdb:rgba(255,59,48,.14);--gn:#1f7a3a;--gnb:rgba(52,199,89,.18);--bar:rgba(249,249,249,.88)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#000;--card:#1c1c1e;--tx:#fff;--mut:#98989f;--ln:#38383a;--fill:#2c2c2e;--ac:#0a84ff;--tint:rgba(10,132,255,.22);--wa:#ffb340;--wab:rgba(255,159,10,.2);--rd:#ff6961;--rdb:rgba(255,69,58,.2);--gn:#32d74b;--gnb:rgba(48,209,88,.2);--bar:rgba(29,29,31,.88)}}
+:root[data-theme="dark"]{--bg:#000;--card:#1c1c1e;--tx:#fff;--mut:#98989f;--ln:#38383a;--fill:#2c2c2e;--ac:#0a84ff;--tint:rgba(10,132,255,.22);--wa:#ffb340;--wab:rgba(255,159,10,.2);--rd:#ff6961;--rdb:rgba(255,69,58,.2);--gn:#32d74b;--gnb:rgba(48,209,88,.2);--bar:rgba(29,29,31,.88)}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;background:var(--bg);color:var(--tx);font:17px/1.35 -apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue",Roboto,sans-serif;padding-bottom:calc(84px + env(safe-area-inset-bottom,0px))}
+header{display:flex;align-items:center;flex-wrap:wrap;gap:8px;padding:14px 20px 2px}
+header b{font-size:2.1rem;line-height:1.15;font-weight:700;letter-spacing:-.02em;flex:1 0 100%;order:2;margin-top:2px}
+.role{font-size:.78rem;color:var(--mut);background:var(--fill);border-radius:99px;padding:3px 10px;order:1;margin-right:auto}
+header .lnk{order:1}
+main{padding:6px 16px;max-width:640px;margin:auto}
+.card{background:var(--card);border-radius:12px;padding:14px;margin:10px 0}
+h2{font-size:.8rem;font-weight:400;text-transform:uppercase;letter-spacing:.02em;color:var(--mut);margin:24px 16px 6px}
+.mut{color:var(--mut)}.small{font-size:.85rem}
+input,select{width:100%;font:inherit;color:var(--tx);background:var(--fill);border:0;border-radius:10px;padding:12px;min-height:46px}
+input:focus,button:focus-visible{outline:2px solid var(--ac);outline-offset:0}
+label{display:block;font-size:.8rem;color:var(--mut);margin-top:10px}
+label input{margin-top:4px}
+.row3{display:grid;grid-template-columns:1fr 1fr 1.3fr;gap:8px}
+.btn{width:100%;min-height:50px;border:0;border-radius:14px;background:var(--ac);color:var(--on);font:inherit;font-weight:600;margin-top:14px}
+.btn.sec{background:var(--tint);color:var(--ac)}
+.btn.dg{background:var(--rdb);color:var(--rd)}
+.btn:active,.lnk:active,.li:active,nav button:active,.x:active{opacity:.55}
+.lnk{background:none;border:0;color:var(--ac);font:inherit;min-height:40px;padding:0 4px}
+.x{border:0;background:var(--fill);color:var(--mut);border-radius:10px;width:46px;min-height:46px;font-size:1rem}
+.top{display:flex;gap:8px;align-items:flex-start}
+.meta{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:10px}
+.lt{margin-left:auto;font-variant-numeric:tabular-nums}
+.bd{font-size:.75rem;font-weight:600;border-radius:99px;padding:3px 10px;display:inline-block}
+.bd.wa{background:var(--wab);color:var(--wa)}.bd.rd{background:var(--rdb);color:var(--rd)}.bd.gn{background:var(--gnb);color:var(--gn)}
+.tot{display:flex;justify-content:space-between;font-size:1.3rem;font-weight:700;font-variant-numeric:tabular-nums}
+.li{display:flex;justify-content:space-between;gap:10px;align-items:center;width:100%;text-align:left;font:inherit;color:inherit;cursor:pointer;border:0}
+.li::after{content:"›";color:#c7c7cc;font-size:1.8rem;line-height:1;margin-left:2px}
+.li .am{font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap;margin-left:auto}
+.err{color:var(--rd);font-weight:600;min-height:1.2em;margin-top:8px}
+.ln1{display:flex;justify-content:space-between;gap:8px;padding:9px 0;border-bottom:.5px solid var(--ln);font-variant-numeric:tabular-nums}
+.ln1:last-child{border:0}
+nav{position:fixed;left:0;right:0;bottom:0;display:flex;background:var(--bar);-webkit-backdrop-filter:saturate(180%) blur(20px);backdrop-filter:saturate(180%) blur(20px);border-top:.5px solid var(--ln);padding-bottom:env(safe-area-inset-bottom,0px)}
+nav button{flex:1;min-height:56px;border:0;background:none;color:var(--mut);font:inherit;font-size:.65rem;padding-top:6px}
+nav button[aria-current=true]{color:var(--ac);font-weight:600}
+nav span{display:block;font-size:1.4rem;line-height:1.2}
+.login{text-align:center;padding:56px 8px}
+.login h1{font-size:2rem;letter-spacing:-.02em}
+</style></head><body>
+<div id="app"></div>
+<datalist id="art"></datalist><datalist id="four"></datalist>
+<script>
+const CAT=`Black Hair|5000|paquet|1
+Bledilait|2600|carton|24
+Bleu d’Azur|2400|carton|24
+Bonbon 500|13000|carton|16
+Bougie|3000|carton|40
+Briquet|16000|carton|20
+Café|268000|sac|1
+Koffee|15000|carton|1
+Chocolat|11000|paquet|24
+Citrus|9600|carton|12
+Colgate|58000|carton|1
+Contre tous|190000|sac|1
+Hug love|15000|balle|5
+Delmonaco|4800|carton|50
+Ekono|2700|carton|24
+Élastique|5000|paquet|1
+Émeron|50000|carton|1
+Evita|65000|carton|2
+Epertdent|9500|carton|12
+Fana sachet|93000|carton|2
+Gand / Ganc|3000|pièces|10
+Glucose|21500|carton|10
+Gold Special|55000|carton|1
+Hina GM|9800|carton|12
+Hina PM|5300|carton|12
+Idéal|13000|carton|20
+Ideal PM|3500|carton|36
+Jewel|6500|carton|24
+Kenzy|62000|carton|2
+Kris|9800|carton|12
+La vache qui rit|5000|carton|36
+Lafatra|10300|carton|12
+Lame BIC|94000|carton|2
+Mayonnaise|6000|carton|12
+Menthe|27000|paquet|1
+Nosy PM|1800|carton|72
+Nursie|27000|carton|12
+Paille de fer|1500|paquet|10
+Papier vellin|18000|carton|5
+Plastique|5000|paquet|1
+Rasoir BIC|94000|carton|1
+Ravitsara|15500|balles|20
+Sardine Pacific|3700|carton|49
+Sasa be|1700|carton|28
+Sasa kely|12500|paquet|10
+Super Glou PM|3700|paquet|10
+Valopy A4|12000|paquet|3
+Vao coco|42000|carton|3
+Verre à jeté|48000|carton|2`.split('\n').map(l=>{const[n,p,u,m]=l.split('|');return{n,p:+p,u,m:+m}});
+const K='bl_proto_v1';let S={liv:[],seq:0,pin:null,pref:'BL',last:null};
+try{S=Object.assign(S,JSON.parse(localStorage.getItem(K))||{})}catch(e){}
+const save=()=>{try{localStorage.setItem(K,JSON.stringify(S))}catch(e){}};
+let me=null,tab='liv',view=null,D=null;
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const fmt=n=>Math.round(n).toLocaleString('fr-FR')+' Ar';
+const today=()=>new Date().toISOString().slice(0,10);
+const dfr=d=>d.split('-').reverse().join('/');
+const tot=L=>L.lines.reduce((s,l)=>s+l.q*l.m*l.p,0);
+const paid=L=>L.pays.reduce((s,p)=>s+p.a,0);
+const rest=L=>tot(L)-paid(L);
+const stat=L=>{const r=rest(L);return r<=0?['Payé','gn']:paid(L)>0?['Partiel','wa']:['Non payé','rd']};
+const chip=L=>{const[t,c]=stat(L);return`<span class="bd ${c}">${t}</span>`};
+const find=id=>S.liv.find(l=>l.id===id);
+const isAdmin=()=>me==='admin';
+
+function render(){
+ const A=$('#app');
+ if(!me){A.innerHTML=`<div class="login"><h1>📦 Bons de livraison</h1><p class="mut">Les données restent sur ce téléphone.</p><label style="text-align:left">${S.pin?'Code administrateur':'Premier lancement : choisissez un code administrateur (4 caractères ou plus)'}<input id="pin" type="password" inputmode="numeric" autocomplete="off"></label><div class="err" id="err" role="alert"></div><button class="btn" data-a="in" data-r="admin">Entrer comme administrateur</button><button class="btn sec" data-a="in" data-r="user">Entrer comme utilisateur</button><p class="mut small">Administrateur : tout faire. Utilisateur : consulter, créer une commande, ajouter une avance.</p></div>`;return}
+ $('#art').innerHTML=CAT.map(a=>`<option value="${esc(a.n)}">`).join('');
+ $('#four').innerHTML=[...new Set(S.liv.map(l=>l.fourn))].map(f=>`<option value="${esc(f)}">`).join('');
+ let h=`<header><b>${{liv:'Livraisons',new:'Nouvelle livraison',due:'Impayés',set:'Réglages'}[tab]}</b><span class="role">${isAdmin()?'Administrateur':'Utilisateur'}</span><button class="lnk" data-a="out">Quitter</button></header><main>`;
+ if(tab==='liv'&&view)h+=detail(find(view));
+ else if(tab==='liv')h+=list();
+ else if(tab==='new')h+=form();
+ else if(tab==='set')h+=settings();else h+=due();
+ h+=`</main><nav>${[['liv','📋','Livraisons'],['new','➕','Nouvelle'],['due','⏳','Impayés'],['set','⚙️','Réglages']].map(([t,i,n])=>`<button data-a="tab" data-t="${t}" ${tab===t?'aria-current="true"':''}><span>${i}</span>${n}</button>`).join('')}</nav>`;
+ A.innerHTML=h;
+ if(tab==='new')D.lines.forEach((_,i)=>meta(i));
+}
+function list(){
+ if(!S.liv.length)return`<div class="card"><p>Aucune livraison enregistrée.</p><button class="btn" data-a="tab" data-t="new">Saisir la première livraison</button></div>`;
+ const old=S.last?(Date.now()-new Date(S.last))/864e5>7:true;return(old?'<div class="card"><span class="bd wa">Sauvegarde conseillée</span><p class="mut small">Aucune sauvegarde récente de vos données.</p><button class="lnk" data-a="tab" data-t="set">Aller aux réglages</button></div>':'')+S.liv.map(L=>`<button class="card li" data-a="open" data-id="${L.id}"><div><b>${esc(L.no)}</b><br>${esc(L.fourn)}<br><span class="mut small">${dfr(L.date)}</span></div><div class="am"><b>${fmt(tot(L))}</b><br>${chip(L)}${rest(L)>0?`<br><span class="small mut">Reste ${fmt(rest(L))}</span>`:''}</div></button>`).join('');
+}
+function detail(L){
+ const r=rest(L);
+ let h=`<button class="lnk" data-a="back">‹ Livraisons</button><div class="card"><div class="top"><div style="flex:1"><b>${esc(L.no)}</b><br>${esc(L.fourn)}<br><span class="mut small">${dfr(L.date)} · saisi par ${L.by==='admin'?'l’administrateur':'un utilisateur'}</span></div>${chip(L)}</div></div><h2>Articles</h2><div class="card">`;
+ h+=L.lines.map(l=>`<div class="ln1"><span>${esc(l.n)}${l.hors?' <span class="bd wa">hors catalogue</span>':''}<br><span class="mut small">${l.q} × ${l.m} × ${fmt(l.p)}</span></span><b>${fmt(l.q*l.m*l.p)}</b></div>`).join('');
+ h+=`</div><div class="card"><div class="tot"><span>Total</span><span>${fmt(tot(L))}</span></div><div class="ln1"><span>Déjà payé</span><span>${fmt(paid(L))}</span></div><div class="ln1"><b>Reste à payer</b><b>${fmt(Math.max(r,0))}</b></div></div><h2>Paiements et notes</h2><div class="card">`;
+ h+=L.pays.length?L.pays.map(p=>`<div class="ln1"><span><b>${p.type}</b> · ${dfr(p.d)}${p.n?`<br><span class="mut small">${esc(p.n)}</span>`:''}</span><b>${fmt(p.a)}</b></div>`).join(''):'<p class="mut">Aucun paiement pour le moment.</p>';
+ h+=`</div>`;
+ if(r>0)h+=`<div class="card"><b>${isAdmin()?'Enregistrer un paiement':'Ajouter une avance'}</b><label>Montant (Ar)<input id="pa" type="number" inputmode="numeric" min="0"></label><label>Note (facultatif)<input id="pn" placeholder="Ex. : acompte reçu en espèces"></label><div class="err" id="err" role="alert"></div><button class="btn" data-a="pay" data-id="${L.id}">${isAdmin()?'Enregistrer le paiement':'Ajouter l’avance'}</button></div>`;
+ if(isAdmin())h+=`<button class="btn dg" data-a="del" data-id="${L.id}">Supprimer cette livraison</button>`;
+ return h;
+}
+function due(){
+ const g={};S.liv.filter(L=>rest(L)>0).forEach(L=>(g[L.fourn]=g[L.fourn]||[]).push(L));
+ const fs=Object.keys(g);
+ if(!fs.length)return`<div class="card"><p>Tout est payé. Aucun impayé.</p></div>`;
+ const T=Object.values(g).flat().reduce((s,L)=>s+rest(L),0);
+ let h=`<div class="card"><div class="tot"><span>Total dû</span><span>${fmt(T)}</span></div></div>`;
+ fs.sort((a,b)=>g[b].reduce((s,L)=>s+rest(L),0)-g[a].reduce((s,L)=>s+rest(L),0));
+ fs.forEach(f=>{const ls=g[f].sort((a,b)=>a.date<b.date?-1:1);
+  h+=`<h2>${esc(f)} · ${fmt(ls.reduce((s,L)=>s+rest(L),0))}</h2>`+ls.map(L=>{const j=Math.max(0,Math.round((Date.now()-new Date(L.date))/864e5));return`<button class="card li" data-a="open" data-id="${L.id}"><div><b>${esc(L.no)}</b><br><span class="mut small">${dfr(L.date)} · il y a ${j} j</span></div><div class="am"><b>${fmt(rest(L))}</b><br>${chip(L)}</div></button>`}).join('')});
+ return h;
+}
+function form(){
+ if(!D)D={fourn:'',date:today(),lines:[newLine()]};
+ return`<div class="card"><label>Fournisseur<input id="fo" list="four" value="${esc(D.fourn)}" placeholder="Nom du fournisseur" autocomplete="off"></label><label>Date de livraison<input id="dt" type="date" value="${D.date}"></label><p class="mut small">Le numéro de bon est attribué automatiquement à l’enregistrement.</p></div><h2>Articles</h2><div id="lines">${D.lines.map(lineHTML).join('')}</div><button class="btn sec" data-a="add">+ Ajouter un article</button><div class="card" style="margin-top:14px"><div class="tot"><span>Total</span><span id="tot">${fmt(0)}</span></div></div><div class="err" id="err" role="alert"></div><button class="btn" data-a="save">Enregistrer la livraison</button>`;
+}
+const newLine=()=>({n:'',q:1,m:1,p:0,u:'',ref:null});
+function lineHTML(l,i){
+ return`<div class="card ln" data-i="${i}"><div class="top"><input class="n" list="art" placeholder="Article : tapez pour chercher" value="${esc(l.n)}" autocomplete="off"><button class="x" data-a="rm" data-i="${i}" aria-label="Retirer cet article">✕</button></div><div class="row3"><label>Quantité<input class="q" type="number" inputmode="decimal" min="0" value="${l.q}"></label><label>Multiplicateur<input class="m" type="number" inputmode="decimal" min="0" value="${l.m}"></label><label>Prix (Ar)<input class="p" type="number" inputmode="decimal" min="0" value="${l.p||''}"></label></div><div class="meta"></div></div>`;
+}
+function meta(i){
+ const l=D.lines[i],c=document.querySelector(`.ln[data-i="${i}"] .meta`);if(!c)return;
+ let b='';
+ if(l.n.trim()&&l.ref==null)b+='<span class="bd wa">Hors catalogue</span>';
+ else if(l.ref!=null&&l.p&&l.p!==l.ref){const d=Math.round((l.p-l.ref)/l.ref*100);b+=`<span class="bd ${d>0?'rd':'gn'}">Prix ${d>0?'+':''}${d} % · réf. ${fmt(l.ref)}</span>`}
+ if(l.u)b+=`<span class="mut small">prix par ${esc(l.u)}</span>`;
+ c.innerHTML=b+`<b class="lt">${fmt(l.q*l.m*l.p)}</b>`;
+ const t=$('#tot');if(t)t.textContent=fmt(D.lines.reduce((s,x)=>s+x.q*x.m*x.p,0));
+}
+document.addEventListener('input',e=>{
+ const t=e.target;
+ if(t.id==='fo'){D.fourn=t.value;return}
+ if(t.id==='dt'){D.date=t.value;return}
+ const c=t.closest('.ln');if(!c||!D)return;
+ const i=+c.dataset.i,l=D.lines[i];
+ if(t.classList.contains('n')){
+  l.n=t.value;
+  const a=CAT.find(x=>x.n.toLowerCase()===t.value.trim().toLowerCase());
+  if(a){l.ref=a.p;l.p=a.p;l.m=a.m;l.u=a.u;c.querySelector('.m').value=a.m;c.querySelector('.p').value=a.p}
+  else{l.ref=null;l.u=''}
+ }else l[t.classList.contains('q')?'q':t.classList.contains('m')?'m':'p']=+t.value||0;
+ meta(i);
+});
+document.addEventListener('click',e=>{
+ const b=e.target.closest('[data-a]');if(!b)return;
+ const a=b.dataset.a,err=m=>{const x=$('#err');if(x)x.textContent=m};
+ if(a==='in'){const r=b.dataset.r;if(r==='admin'){const p=($('#pin').value||'').trim();if(!S.pin){if(p.length<4)return err('Choisissez un code d’au moins 4 caractères.');S.pin=p;save()}else if(p!==S.pin)return err('Code incorrect.')}me=r;tab='liv';view=null;try{navigator.storage&&navigator.storage.persist&&navigator.storage.persist()}catch(e){}}
+ else if(a==='out'){me=null;D=null}
+ else if(a==='tab'){tab=b.dataset.t;view=null}
+ else if(a==='open'){tab='liv';view=b.dataset.id}
+ else if(a==='back')view=null;
+ else if(a==='exp'){dl('sauvegarde-bons-'+today()+'.json',JSON.stringify(S),'application/json');S.last=today();save()}
+ else if(a==='csv')csv();
+ else if(a==='pref'){const v=$('#pf').value.trim().replace(/[^A-Za-z0-9]/g,'').toUpperCase();if(!v)return err('Préfixe invalide.');S.pref=v;save();const x=$('#err');x.textContent='Enregistré.';x.style.color='var(--gn)';return}
+ else if(a==='pin'){const v=$('#np').value.trim();if(v.length<4)return err('Au moins 4 caractères.');S.pin=v;save();$('#np').value='';const x=$('#err');x.textContent='Code modifié.';x.style.color='var(--gn)';return}
+ else if(a==='add'){D.lines.push(newLine());$('#lines').insertAdjacentHTML('beforeend',lineHTML(D.lines.at(-1),D.lines.length-1));return}
+ else if(a==='rm'){if(D.lines.length>1)D.lines.splice(+b.dataset.i,1);else D.lines=[newLine()]}
+ else if(a==='save'){
+  const ls=D.lines.filter(l=>l.n.trim());
+  if(!D.fourn.trim())return err('Indiquez le fournisseur.');
+  if(!ls.length)return err('Ajoutez au moins un article.');
+  if(ls.some(l=>!(l.q>0&&l.m>0&&l.p>0)))return err('Chaque article doit avoir une quantité, un multiplicateur et un prix supérieurs à 0.');
+  S.seq++;
+  const id='L'+Date.now();
+  S.liv.unshift({id,no:`${S.pref||'BL'}-${D.date.slice(0,4)}-${String(S.seq).padStart(4,'0')}`,date:D.date,fourn:D.fourn.trim(),by:me,pays:[],lines:ls.map(l=>({n:l.n.trim(),q:l.q,m:l.m,p:l.p,hors:l.ref==null}))});
+  save();D=null;tab='liv';view=id;
+ }
+ else if(a==='pay'){
+  const L=find(b.dataset.id),v=+$('#pa').value;
+  if(!(v>0))return err('Saisissez un montant supérieur à 0.');
+  if(v>rest(L))return err('Le montant dépasse le reste à payer ('+fmt(rest(L))+').');
+  L.pays.push({d:today(),a:v,n:$('#pn').value.trim(),by:me,type:isAdmin()?'Paiement':'Avance'});save();
+ }
+ else if(a==='del'){
+  if(b.dataset.sure!=='1'){b.dataset.sure='1';b.textContent='Toucher à nouveau pour confirmer';return}
+  S.liv=S.liv.filter(l=>l.id!==b.dataset.id);save();view=null;
+ }
+ render();
+});
+function dl(n,t,m){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([t],{type:m}));a.download=n;document.body.appendChild(a);a.click();a.remove()}
+function csv(){const q=v=>'"'+String(v).replace(/"/g,'""')+'"';const r=[['Numéro','Date','Fournisseur','Article','Quantité','Multiplicateur','Prix','Total ligne','Statut'].map(q).join(';')];S.liv.forEach(L=>L.lines.forEach(l=>r.push([L.no,L.date,L.fourn,l.n,l.q,l.m,l.p,l.q*l.m*l.p,stat(L)[0]].map(q).join(';'))));dl('livraisons-'+today()+'.csv','\ufeff'+r.join('\r\n'),'text/csv')}
+function settings(){
+ let h=`<div class="card"><b>Sauvegarde</b><p class="mut small">Les données sont stockées uniquement sur ce téléphone. Dernière sauvegarde : ${S.last?dfr(S.last):'jamais'}. Faites-en une régulièrement et envoyez le fichier par WhatsApp ou email.</p><button class="btn" data-a="exp">Exporter la sauvegarde</button><label class="btn sec" style="display:flex;align-items:center;justify-content:center">Importer une sauvegarde<input id="imp" type="file" accept=".json,application/json" hidden></label><button class="btn sec" data-a="csv">Exporter en tableau (CSV)</button></div>`;
+ if(isAdmin())h+=`<div class="card"><b>Paramètres administrateur</b><p class="mut small">Utilisez un préfixe différent sur chaque téléphone (par exemple R ou M) pour éviter les numéros de bon en double.</p><label>Préfixe des numéros de bon<input id="pf" value="${esc(S.pref||'BL')}" maxlength="6"></label><button class="btn sec" data-a="pref">Enregistrer le préfixe</button><label>Nouveau code administrateur<input id="np" type="password" inputmode="numeric" autocomplete="off"></label><button class="btn sec" data-a="pin">Changer le code</button><div class="err" id="err" role="alert"></div></div>`;
+ return h+`<p class="mut small">${S.liv.length} livraison(s) enregistrée(s) sur ce téléphone.</p>`;
+}
+document.addEventListener('change',e=>{
+ if(e.target.id!=='imp')return;const f=e.target.files[0];if(!f)return;
+ const r=new FileReader();r.onload=()=>{try{const d=JSON.parse(r.result);if(!Array.isArray(d.liv))throw 0;if(!confirm('Remplacer toutes les données de ce téléphone par cette sauvegarde ?'))return;S=Object.assign({liv:[],seq:0,pin:null,pref:'BL',last:null},d);save();me=null;render()}catch(x){alert('Fichier de sauvegarde invalide.')}};
+ r.readAsText(f);
+});
+if('serviceWorker' in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
+render();
+</script></body></html>
